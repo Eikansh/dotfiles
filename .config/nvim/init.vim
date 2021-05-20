@@ -146,12 +146,6 @@ nnoremap <right> :bn<CR>
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 
-"use relative lines unless focus lost
-autocmd FocusLost * :set number
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
-autocmd CursorMoved * :set relativenumber
-
 " =======================================
 " # Plugin Setup
 " =======================================
