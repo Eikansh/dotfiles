@@ -22,7 +22,6 @@ Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install', 'for': ['text', 'markdown']  }
 Plug 'lervag/vimtex', { 'for': ['tex'] }
-"Plug 'oberblastmeister/neuron.nvim', {'branch': 'unstable'}
 Plug 'chiefnoah/neuron-v2.vim', { 'for': ['text', 'markdown'] }
 Plug 'sedm0784/vim-you-autocorrect', { 'for': ['text', 'markdown', 'tex'] }
 
