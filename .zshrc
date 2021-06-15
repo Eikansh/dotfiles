@@ -147,6 +147,7 @@ export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
 export CUDA_INSTALL_PATH=/usr/local/cuda
+export LLVM_DIR="/usr/lib/llvm-11"
 
 note() {
   cd ~/notes && nvim "+Note $*"

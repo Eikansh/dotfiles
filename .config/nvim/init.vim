@@ -11,23 +11,31 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'hoob3rt/lualine.nvim'
 Plug 'airblade/vim-gitgutter'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
-Plug 'easymotion/vim-easymotion'
+Plug 'ggandor/lightspeed.nvim'
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'SirVer/ultisnips'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} 
+Plug 'tpope/vim-repeat'
 
+Plug 'jiangmiao/auto-pairs'
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install', 'for': ['text', 'markdown']  }
 Plug 'lervag/vimtex', { 'for': ['tex'] }
+
 Plug 'chiefnoah/neuron-v2.vim', { 'for': ['text', 'markdown'] }
 Plug 'sedm0784/vim-you-autocorrect', { 'for': ['text', 'markdown', 'tex'] }
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+Plug 'folke/which-key.nvim'
+Plug 'tweekmonster/startuptime.vim'
 
 " Themes
 "Plug 'overcache/NeoSolarized'
-Plug 'morhetz/gruvbox'
+"Plug 'morhetz/gruvbox'
+"Plug 'folke/tokyonight.nvim'
+Plug 'monsonjeremy/onedark.nvim'
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -51,12 +59,13 @@ set noshowmode
 " Show line numbers.
 set number
 " relative line numbering
-" set relativenumber
+set relativenumber
 " show lines above and below cursor (when possible)
 set scrolloff=5 
 set laststatus=2
 set backspace=indent,eol,start
 set updatetime=100
+set timeoutlen=500
 set hidden
 " Enable mouse support.
 set mouse+=a
@@ -71,8 +80,9 @@ set smartcase
 " Colorscheme
 set termguicolors
 set background=dark
-"colorscheme NeoSolarized
-colorscheme gruvbox
+let g:tokyonight_style = "night"
+colorscheme onedark
+"colorscheme tokyonight
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -144,12 +154,6 @@ nnoremap <right> :bn<CR>
 
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
-
-"use relative lines unless focus lost
-autocmd FocusLost * :set number
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
-autocmd CursorMoved * :set relativenumber
 
 " =======================================
 " # Plugin Setup
@@ -225,6 +229,14 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
+" lightspeed
+"""""""""""""""""""""""""""""""""""""""""
+lua <<EOF
+require'lightspeed'.setup {
+   jump_to_first_match = false,
+ }
+EOF
+
 " ultisnips
 """""""""""""""""""""""""""""""""""""""""
 let g:UltiSnipsExpandTrigger="<C-e>"
@@ -237,6 +249,7 @@ let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache' ] "empty by default
 let g:nvim_tree_gitignore = 1 "0 by default
 let g:nvim_tree_auto_close = 1 "0 by default, closes the tree when it's the last window
 let g:nvim_tree_quit_on_open = 1 "0 by default, closes the tree when you open a file
+let g:nvim_tree_indent_markers = 1 
 let g:nvim_tree_follow = 1 "0 by default, this option allows the cursor to be updated when entering a buffer
 let g:nvim_tree_hide_dotfiles = 1 "0 by default, this option hides files and folders starting with a dot `.`
 let g:nvim_tree_git_hl = 1 "0 by default, will enable file highlight for git attributes (can be used without the icons).
@@ -267,38 +280,41 @@ nnoremap <leader>n :NvimTreeToggle<CR>
 
 " lualine
 """""""""""""""""""""""""""""""""""""""""
-let g:lualine = {
-    \'options' : {
-    \  'theme' : 'gruvbox',
-    \  'section_separators' : ['', ''],
-    \  'component_separators' : ['', ''],
-    \  'icons_enabled' : v:true,
-    \},
-    \'sections' : {
-    \  'lualine_a' : [ ['mode', {'upper': v:true,},], ],
-    \  'lualine_b' : [ ['branch', {'icon': '',}, ], ],
-    \  'lualine_c' : [ ['filename', {'file_status': v:true,},], ],
-    \  'lualine_x' : [ 'encoding', 'fileformat', 'filetype' ],
-    \  'lualine_y' : [ 'progress' ],
-    \  'lualine_z' : [ 'location'  ],
-    \},
-    \'inactive_sections' : {
-    \  'lualine_a' : [  ],
-    \  'lualine_b' : [  ],
-    \  'lualine_c' : [ 'filename' ],
-    \  'lualine_x' : [ 'location' ],
-    \  'lualine_y' : [  ],
-    \  'lualine_z' : [  ],
-    \},
-    \'extensions' : [ 'fzf' ],
-    \}
-lua require("lualine").setup()
+lua <<EOF
+require'lualine'.setup {
+  options = {
+    icons_enabled = true,
+    theme = 'onedark',
+    component_separators = {'', ''},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  extensions = {'fzf', 'nvim-tree', 'quickfix'}
+}
+EOF
 
 " vim-markdown
 """""""""""""""""""""""""""""""""""""""""
 let g:vim_markdown_frontmatter = 1
-"let g:vim_markdown_folding_disabled = 1
-let g:vim_markdown_folding_level = 3
+let g:vim_markdown_folding_disabled = 1
+"let g:vim_markdown_folding_level = 3
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_no_extensions_in_markdown = 1
 

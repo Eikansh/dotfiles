@@ -12,3 +12,6 @@ Akash
 proc
 kpageflags
 LRU
+inode/!
+inode
+Taint
