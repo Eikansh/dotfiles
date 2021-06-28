@@ -17,6 +17,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'ggandor/lightspeed.nvim'
 Plug 'onsails/lspkind-nvim'
+Plug 'b3nj5m1n/kommentary'
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
@@ -86,10 +87,8 @@ set smartcase
 " Colorscheme
 set termguicolors
 set background=dark
-"let g:tokyonight_style = "night"
 colorscheme onedark
 "colorscheme NeoSolarized
-"colorscheme tokyonight
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -117,9 +116,6 @@ set tags=./tags;/
 
 " toggle relative numbering
 nnoremap <C-n> :set rnu!<CR>
-
-"fly between buffers
-nnoremap gb :ls<CR>:b<Space>
 
 "  y d p P   --  Quick copy paste into system clipboard
 nmap <Leader>y "+y
@@ -156,8 +152,8 @@ inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
 
 " Left and right can switch buffers
-nnoremap <left> :bp<CR>
-nnoremap <right> :bn<CR>
+nnoremap <left> <c-o>
+nnoremap <right> <c-i>
 
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)

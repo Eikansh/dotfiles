@@ -133,8 +133,9 @@ alias os='cd ~/e0253-os'
 alias osl='cd ~/e0253-os/linux-5.11.5'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME'
 alias cat='bat'
-alias ls='lsd'
+alias ls='lsd --group-dirs first'
 alias ll='lsd -Alh'
+
 
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
