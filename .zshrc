@@ -110,7 +110,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias nv='nvim'
+alias nv='~/Documents/nvim.appimage'
 alias c='clear'
 alias q='exit'
 alias doc='cd ~/Documents'
@@ -176,3 +176,6 @@ function set-title-preexec() {
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd set-title-precmd
 add-zsh-hook preexec set-title-preexec
+
+# opam configuration
+test -r /home/eikansh/.opam/opam-init/init.zsh && . /home/eikansh/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
