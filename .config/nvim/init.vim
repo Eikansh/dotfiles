@@ -240,11 +240,13 @@ require'lightspeed'.setup {
  }
 EOF
 
-" ultisnips
+" which-key
 """""""""""""""""""""""""""""""""""""""""
-let g:UltiSnipsExpandTrigger="<C-e>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+lua << EOF
+require("which-key").setup{
+
+}
+EOF
 
 " nvim-tree
 """""""""""""""""""""""""""""""""""""""""
