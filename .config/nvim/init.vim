@@ -109,6 +109,7 @@ set tabstop=2 shiftwidth=2 expandtab softtabstop=2
 
 "exuberant-tags support
 set tags=./tags;/
+set completeopt=menuone,noselect
 
 " =======================================
 " # Custom Key Mapping
