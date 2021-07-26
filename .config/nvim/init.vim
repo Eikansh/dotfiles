@@ -24,7 +24,8 @@ Plug 'kyazdani42/nvim-tree.lua'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} 
+
+Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
 Plug 'tpope/vim-repeat'
 
 Plug 'jiangmiao/auto-pairs'
