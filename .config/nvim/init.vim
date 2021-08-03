@@ -40,9 +40,7 @@ Plug 'folke/which-key.nvim'
 Plug 'tweekmonster/startuptime.vim'
 
 " Themes
-"Plug 'overcache/NeoSolarized'
-"Plug 'morhetz/gruvbox'
-"Plug 'folke/tokyonight.nvim'
+Plug 'folke/tokyonight.nvim'
 Plug 'monsonjeremy/onedark.nvim'
 
 " List ends here. Plugins become visible to Vim after this call.
@@ -54,12 +52,6 @@ call plug#end()
 let mapleader = "\<Space>"
 let maplocalleader="\<space>"
 
-set nocompatible
-" Turn on syntax highlighting.
-syntax on
-" enable file type detection
-filetype plugin indent on 
-set autoindent
 " Disable the default Vim startup message.
 set shortmess+=I
 "hide mode
@@ -80,16 +72,9 @@ set mouse+=a
 "For search
 set ignorecase
 set smartcase
-set incsearch
 set wrapscan          " wrap around
 set ignorecase
 set smartcase
-
-" Colorscheme
-set termguicolors
-set background=dark
-colorscheme onedark
-"colorscheme NeoSolarized
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -240,6 +225,18 @@ lua <<EOF
 require'lightspeed'.setup {
    jump_to_first_match = false,
  }
+EOF
+
+" onedark
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("onedark").setup({
+  functionStyle = "italic",
+  sidebars = {"qf", "vista_kind", "terminal", "packer"},
+
+  -- Change the "hint" color to the "orange" color, and make the "error" color bright red
+  colors = {hint = "orange", error = "#ff0000"}
+})
 EOF
 
 " which-key
