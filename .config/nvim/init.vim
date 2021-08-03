@@ -4,9 +4,9 @@
 call plug#begin()
 
 " Declare the list of plugins.
+Plug 'windwp/nvim-autopairs'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'hrsh7th/nvim-compe'
@@ -27,8 +27,6 @@ Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
 Plug 'tpope/vim-repeat'
 
-" Plug 'jiangmiao/auto-pairs'
-Plug 'windwp/nvim-autopairs'
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install', 'for': ['text', 'markdown']  }
@@ -40,7 +38,7 @@ Plug 'folke/which-key.nvim'
 Plug 'tweekmonster/startuptime.vim'
 
 " Themes
-Plug 'folke/tokyonight.nvim'
+" Plug 'folke/tokyonight.nvim'
 Plug 'monsonjeremy/onedark.nvim'
 
 " List ends here. Plugins become visible to Vim after this call.
@@ -120,7 +118,7 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-" <ESC> exit terminal mode
+" exit terminal mode
 tnoremap <C-\> <C-\><C-n>
 
 nnoremap <Leader>q :q
@@ -137,10 +135,6 @@ inoremap <Left>  <ESC>:echoe "Use h"<CR>
 inoremap <Right> <ESC>:echoe "Use l"<CR>
 inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
-
-" Left and right can switch buffers
-nnoremap <left> <c-o>
-nnoremap <right> <c-i>
 
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
