@@ -29,7 +29,7 @@ Plug 'jiangmiao/auto-pairs'
 
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install', 'for': ['text', 'markdown']  }
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'lervag/vimtex', { 'for': ['tex'] }
 
 Plug 'chiefnoah/neuron-v2.vim', { 'for': ['text', 'markdown'] }
@@ -225,11 +225,7 @@ EOF
 """""""""""""""""""""""""""""""""""""""""
 lua << EOF
 require("onedark").setup({
-  functionStyle = "italic",
-  sidebars = {"qf", "vista_kind", "terminal", "packer"},
-
-  -- Change the "hint" color to the "orange" color, and make the "error" color bright red
-  colors = {hint = "orange", error = "#ff0000"}
+  functionStyle = "italic"
 })
 EOF
 
@@ -444,7 +440,8 @@ require('lspkind').init({
     symbol_map = {
       Text = '',
       Method = 'ƒ',
-      Function = '',
+      Function = 'ƒ',
+      -- Function = '',
       Constructor = '',
       Variable = '',
       Class = '',
