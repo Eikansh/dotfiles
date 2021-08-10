@@ -4,10 +4,8 @@
 call plug#begin()
 
 " Declare the list of plugins.
-Plug 'kevinhwang91/nvim-bqf'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'hrsh7th/nvim-compe'
@@ -27,11 +25,11 @@ Plug 'hrsh7th/vim-vsnip-integ'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
 Plug 'tpope/vim-repeat'
-
 Plug 'jiangmiao/auto-pairs'
+
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install', 'for': ['text', 'markdown']  }
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'lervag/vimtex', { 'for': ['tex'] }
 
 Plug 'chiefnoah/neuron-v2.vim', { 'for': ['text', 'markdown'] }
@@ -40,9 +38,7 @@ Plug 'folke/which-key.nvim'
 Plug 'tweekmonster/startuptime.vim'
 
 " Themes
-"Plug 'overcache/NeoSolarized'
-"Plug 'morhetz/gruvbox'
-"Plug 'folke/tokyonight.nvim'
+" Plug 'folke/tokyonight.nvim'
 Plug 'monsonjeremy/onedark.nvim'
 
 " List ends here. Plugins become visible to Vim after this call.
@@ -54,12 +50,6 @@ call plug#end()
 let mapleader = "\<Space>"
 let maplocalleader="\<space>"
 
-set nocompatible
-" Turn on syntax highlighting.
-syntax on
-" enable file type detection
-filetype plugin indent on 
-set autoindent
 " Disable the default Vim startup message.
 set shortmess+=I
 "hide mode
@@ -80,16 +70,9 @@ set mouse+=a
 "For search
 set ignorecase
 set smartcase
-set incsearch
 set wrapscan          " wrap around
 set ignorecase
 set smartcase
-
-" Colorscheme
-set termguicolors
-set background=dark
-colorscheme onedark
-"colorscheme NeoSolarized
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -135,7 +118,7 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-" <ESC> exit terminal mode
+" exit terminal mode
 tnoremap <C-\> <C-\><C-n>
 
 nnoremap <Leader>q :q
@@ -152,10 +135,6 @@ inoremap <Left>  <ESC>:echoe "Use h"<CR>
 inoremap <Right> <ESC>:echoe "Use l"<CR>
 inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
-
-" Left and right can switch buffers
-nnoremap <left> <c-o>
-nnoremap <right> <c-i>
 
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
@@ -240,6 +219,14 @@ lua <<EOF
 require'lightspeed'.setup {
    jump_to_first_match = false,
  }
+EOF
+
+" onedark
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("onedark").setup({
+  functionStyle = "italic"
+})
 EOF
 
 " which-key
@@ -453,7 +440,8 @@ require('lspkind').init({
     symbol_map = {
       Text = '',
       Method = 'ƒ',
-      Function = '',
+      Function = 'ƒ',
+      -- Function = '',
       Constructor = '',
       Variable = '',
       Class = '',
