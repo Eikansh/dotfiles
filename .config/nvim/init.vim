@@ -16,6 +16,7 @@ Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'ggandor/lightspeed.nvim'
 Plug 'onsails/lspkind-nvim'
 Plug 'b3nj5m1n/kommentary'
+Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
@@ -213,6 +214,14 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
+" onedark
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("onedark").setup({
+  functionStyle = "italic"
+})
+EOF
+
 " lightspeed
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
@@ -221,13 +230,8 @@ require'lightspeed'.setup {
  }
 EOF
 
-" onedark
-"""""""""""""""""""""""""""""""""""""""""
-lua << EOF
-require("onedark").setup({
-  functionStyle = "italic"
-})
-EOF
+:highlight LightspeedShortcut guibg=#282c34 guifg=#ff00ff gui=bold,underline
+:highlight LightspeedLabel guibg=#282c34 guifg=#ff00ff gui=bold,underline
 
 " which-key
 """""""""""""""""""""""""""""""""""""""""
@@ -303,6 +307,20 @@ require'lualine'.setup {
   extensions = {'fzf', 'nvim-tree', 'quickfix'}
 }
 EOF
+
+" wilder.nvim
+"""""""""""""""""""""""""""""""""""""""""
+call wilder#setup({'modes': [':', '/', '?']})
+call wilder#set_option('pipeline', [
+      \   wilder#branch(
+      \     wilder#cmdline_pipeline(),
+      \     wilder#search_pipeline(),
+      \   ),
+      \ ])
+
+call wilder#set_option('renderer', wilder#wildmenu_renderer({
+      \ 'highlighter': wilder#basic_highlighter(),
+      \ }))
 
 " vim-markdown
 """""""""""""""""""""""""""""""""""""""""
