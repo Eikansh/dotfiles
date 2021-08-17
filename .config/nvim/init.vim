@@ -70,8 +70,7 @@ set mouse+=a
 set ignorecase
 set smartcase
 set wrapscan          " wrap around
-set ignorecase
-set smartcase
+set completeopt=menuone,noselect
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -92,7 +91,6 @@ set tabstop=2 shiftwidth=2 expandtab softtabstop=2
 
 "exuberant-tags support
 set tags=./tags;/
-set completeopt=menuone,noselect
 
 " =======================================
 " # Custom Key Mapping
