@@ -125,6 +125,10 @@ tnoremap <C-\> <C-\><C-n>
 nnoremap <Leader>q :q
 nnoremap <Leader>w :w
 
+" Bring search results to midscreen
+nnoremap n nzz
+nnoremap N Nzz
+
 " Try to prevent bad habits like using the arrow keys for movement.
 " Do this in normal mode...
 nnoremap <Left>  :echoe "Use h"<CR>
@@ -232,6 +236,7 @@ EOF
 
 :highlight LightspeedShortcut guibg=#282c34 guifg=#ff00ff gui=bold,underline
 :highlight LightspeedLabel guibg=#282c34 guifg=#ff00ff gui=bold,underline
+:highlight LightspeedOneCharMatch guibg=#282c34 guifg=#ff00ff gui=bold,underline
 
 " which-key
 """""""""""""""""""""""""""""""""""""""""
