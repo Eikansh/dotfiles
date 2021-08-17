@@ -13,18 +13,18 @@ Plug 'hrsh7th/nvim-compe'
 Plug 'hoob3rt/lualine.nvim'
 Plug 'airblade/vim-gitgutter'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
-Plug 'ggandor/lightspeed.nvim'
 Plug 'onsails/lspkind-nvim'
-Plug 'b3nj5m1n/kommentary'
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
-
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
+Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
+Plug 'folke/which-key.nvim'
+
+Plug 'b3nj5m1n/kommentary'
+Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
-
-Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
 
@@ -32,10 +32,8 @@ Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'lervag/vimtex', { 'for': ['tex'] }
-
 Plug 'chiefnoah/neuron-v2.vim', { 'for': ['text', 'markdown'] }
 Plug 'sedm0784/vim-you-autocorrect', { 'for': ['text', 'markdown', 'tex'] }
-Plug 'folke/which-key.nvim'
 Plug 'tweekmonster/startuptime.vim'
 
 " Themes
