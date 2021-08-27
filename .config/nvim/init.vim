@@ -8,9 +8,11 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
+
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'saadparwaiz1/cmp_luasnip'
 
 Plug 'hoob3rt/lualine.nvim'
 Plug 'airblade/vim-gitgutter'
@@ -24,9 +26,8 @@ Plug 'folke/which-key.nvim'
 Plug 'b3nj5m1n/kommentary'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
+Plug 'L3MON4D3/LuaSnip'
 Plug 'rafamadriz/friendly-snippets'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
 
@@ -277,7 +278,8 @@ let g:nvim_tree_icons = {
     \   'symlink_open': "",
     \   }
     \ }
-nnoremap <leader>n :NvimTreeToggle<CR>
+nnoremap <leader>n :NvimTreeRefresh<CR>:NvimTreeToggle<CR>
+nnoremap <leader>N :NvimTreeToggle<CR>
 
 " lualine
 """""""""""""""""""""""""""""""""""""""""
@@ -386,7 +388,6 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Set some keybinds conditional on server capabilities
   if client.resolved_capabilities.document_formatting then
@@ -410,20 +411,7 @@ end
 -- config that activates keymaps and enables snippet support
 local function make_config()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities.textDocument.completion.completionItem.snippetSupport = true
-  capabilities.textDocument.completion.completionItem.preselectSupport = true
-  capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
-  capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
-  capabilities.textDocument.completion.completionItem.deprecatedSupport = true
-  capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
-  capabilities.textDocument.completion.completionItem.tagSupport = { valueSet = { 1 } }
-  capabilities.textDocument.completion.completionItem.resolveSupport = {
-    properties = {
-      'documentation',
-      'detail',
-      'additionalTextEdits',
-    }
-  }
+  capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
   return {
     -- enable snippet support
     capabilities = capabilities,
@@ -457,47 +445,24 @@ end
   vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
 EOF
 
-" lspkind
-"""""""""""""""""""""""""""""""""""""""""
-lua<<EOF
-require('lspkind').init({
-    -- enables text annotations
-    --
-    -- default: true
-    with_text = true,
-
-    -- default symbol map
-    -- can be either 'default' or
-    -- 'codicons' for codicon preset (requires vscode-codicons font installed)
-    --
-    -- default: 'default'
-    -- preset = 'codicons',
-
-    -- override preset symbols
-    --
-    -- default: {}
-    symbol_map = {
-      Text = '',
-      Method = 'ƒ',
-      Function = 'ƒ',
-      -- Function = '',
-    },
-})
-EOF
-
 " nvim-comp
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
-  local cmp = require('cmp')
+  local cmp = require 'cmp'
+  local t = function(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+  end
+  local check_back_space = function()
+    local col = vim.fn.col '.' - 1
+    return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
+  end
+  local luasnip = require("luasnip")
   cmp.setup {
     snippet = {
       expand = function(args)
-        -- You must install `vim-vsnip` if you use the following as-is.
-        vim.fn['vsnip#anonymous'](args.body)
-      end
+        require('luasnip').lsp_expand(args.body)
+      end,
     },
-
-    -- You must set mapping if you want.
     mapping = {
       ['<C-p>'] = cmp.mapping.select_prev_item(),
       ['<C-n>'] = cmp.mapping.select_next_item(),
@@ -505,32 +470,42 @@ lua <<EOF
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.close(),
-      ['<CR>'] = cmp.mapping.confirm({
-        behavior = cmp.ConfirmBehavior.Insert,
+      ['<CR>'] = cmp.mapping.confirm {
+        behavior = cmp.ConfirmBehavior.Replace,
         select = true,
+      },
+      ["<tab>"] = cmp.mapping(function(fallback)
+        if vim.fn.pumvisible() == 1 then
+          vim.fn.feedkeys(t("<C-n>"), "n")
+        elseif luasnip.expand_or_jumpable() then
+          vim.fn.feedkeys(t("<Plug>luasnip-expand-or-jump"), "")
+        elseif check_back_space() then
+          vim.fn.feedkeys(t("<tab>"), "n")
+        else
+          fallback()
+        end
+      end, {
+        "i",
+        "s",
       }),
-      ['<Tab>'] = function(fallback)
-          if vim.fn.pumvisible() == 1 then
-            vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
-          elseif vim.fn['vsnip#available']() == 1 then
-            vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>(vsnip-expand-or-jump)', true, true, true), '')
-          else
-            fallback()
-          end
-        end,
-      ['<S-Tab>'] = function(fallback)
-            if vim.fn.pumvisible() == 1 then
-              vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
-            else
-              fallback()
-            end
-          end,
+      ["<S-tab>"] = cmp.mapping(function(fallback)
+        if vim.fn.pumvisible() == 1 then
+          vim.fn.feedkeys(t("<C-p>"), "n")
+        elseif luasnip.jumpable(-1) then
+          vim.fn.feedkeys(t("<Plug>luasnip-jump-prev"), "")
+        else
+          fallback()
+        end
+      end, {
+        "i",
+        "s",
+      }),
     },
-
     -- You should specify your *installed* sources.
     sources = {
-      { name = 'nvim_lsp'},
-      { name = 'buffer' }
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+    { name = 'buffer' },
     },
   }
 
@@ -539,6 +514,8 @@ lua <<EOF
     formatting = {
       format = function(entry, vim_item)
         vim_item.kind = lspkind.presets.default[vim_item.kind]
+        .. " "
+        .. vim_item.kind
         return vim_item
       end
     }
