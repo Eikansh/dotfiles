@@ -4,6 +4,7 @@
 call plug#begin()
 
 " Declare the list of plugins.
+Plug 'kevinhwang91/nvim-bqf'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'neovim/nvim-lspconfig'
@@ -12,6 +13,7 @@ Plug 'kabouzeid/nvim-lspinstall'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-path'
 Plug 'saadparwaiz1/cmp_luasnip'
 
 Plug 'hoob3rt/lualine.nvim'
@@ -22,6 +24,7 @@ Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
 Plug 'folke/which-key.nvim'
+Plug 'SmiteshP/nvim-gps'
 
 Plug 'b3nj5m1n/kommentary'
 Plug 'ggandor/lightspeed.nvim'
@@ -284,6 +287,7 @@ nnoremap <leader>N :NvimTreeToggle<CR>
 " lualine
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
+local gps = require("nvim-gps")
 require'lualine'.setup {
   options = {
     icons_enabled = true,
@@ -295,7 +299,7 @@ require'lualine'.setup {
   sections = {
     lualine_a = {'mode'},
     lualine_b = {'branch'},
-    lualine_c = {'filename'},
+    lualine_c = {'filename', gps.get_location, condition = gps.is_available},
     lualine_x = {'encoding', 'fileformat', 'filetype'},
     lualine_y = {'progress'},
     lualine_z = {'location'}
@@ -506,6 +510,7 @@ lua <<EOF
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'buffer' },
+    { name = 'path' },
     },
   }
 
