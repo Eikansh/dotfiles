@@ -11,6 +11,7 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
 
 Plug 'hrsh7th/nvim-cmp'
+Plug 'L3MON4D3/LuaSnip'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
@@ -22,14 +23,14 @@ Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'onsails/lspkind-nvim'
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
-Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'} 
+Plug 'nvim-treesitter/nvim-treesitter', {'branch' : '0.5-compat'}
+Plug 'nvim-treesitter/nvim-treesitter-textobjects', {'branch' : '0.5-compat'}
 Plug 'folke/which-key.nvim'
 Plug 'SmiteshP/nvim-gps'
 
 Plug 'b3nj5m1n/kommentary'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
-Plug 'L3MON4D3/LuaSnip'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
@@ -217,6 +218,51 @@ require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true
   },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = 'gnn',
+      node_incremental = 'grn',
+      scope_incremental = 'grc',
+      node_decremental = 'grm',
+    },
+  },
+  indent = {
+    enable = true,
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        [']m'] = '@function.outer',
+        [']]'] = '@class.outer',
+      },
+      goto_next_end = {
+        [']M'] = '@function.outer',
+        [']['] = '@class.outer',
+      },
+      goto_previous_start = {
+        ['[m'] = '@function.outer',
+        ['[['] = '@class.outer',
+      },
+      goto_previous_end = {
+        ['[M'] = '@function.outer',
+        ['[]'] = '@class.outer',
+      },
+    },
+  },
 }
 EOF
 
@@ -370,83 +416,47 @@ nmap [s <Plug>VimyouautocorrectPrevious
 " LSP
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
--- keymaps
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+  local nvim_lsp = require 'lspconfig'
+  local on_attach = function(_, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-
-  -- Set some keybinds conditional on server capabilities
-  if client.resolved_capabilities.document_formatting then
-    buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-  elseif client.resolved_capabilities.document_range_formatting then
-    buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
-  end
-
-  -- Set autocommands conditional on server_capabilities
-  if client.resolved_capabilities.document_highlight then
-    vim.api.nvim_exec([[
-    augroup lsp_document_highlight
-    autocmd! * <buffer>
-    autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-    autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-    augroup END
-    ]], false)
-  end
+  local opts = { noremap = true, silent = true }
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'v', '<leader>ca', '<cmd>lua vim.lsp.buf.range_code_action()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
+  vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
 end
 
--- config that activates keymaps and enables snippet support
-local function make_config()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-  return {
-    -- enable snippet support
-    capabilities = capabilities,
-    -- map buffer local keybindings when the language server attaches
+-- nvim-cmp supports additional completion capabilities
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+-- Enable the following language servers
+local servers = { 'clangd', 'pyright'}
+for _, lsp in ipairs(servers) do
+  nvim_lsp[lsp].setup {
     on_attach = on_attach,
+    capabilities = capabilities,
   }
 end
-
--- lsp-install
-local function setup_servers()
-  require'lspinstall'.setup()
-  local lspconf = require("lspconfig")
-  -- get all installed servers
-  local servers = require'lspinstall'.installed_servers()
-  table.insert(servers, "clangd")
-  table.insert(servers, "pyright")
-
-  for _, server in pairs(servers) do
-    local config = make_config()
-    require'lspconfig'[server].setup(config)
-  end
-end
-
-setup_servers()
-
--- Automatically reload after `:LspInstall <server>` so we don't have to restart neovim
-require'lspinstall'.post_install_hook = function ()
-  setup_servers() -- reload installed servers
-  vim.cmd("bufdo e") -- this triggers the FileType autocmd that starts the server
-end
-  vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
+-- vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
+vim.lsp.handlers["textDocument/publishDiagnostics"] =      
+   vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics,{ update_in_insert = false })
 EOF
 
 " nvim-comp
