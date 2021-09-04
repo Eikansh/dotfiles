@@ -11,7 +11,6 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
 
 Plug 'hrsh7th/nvim-cmp'
-Plug 'L3MON4D3/LuaSnip'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
@@ -21,13 +20,13 @@ Plug 'hoob3rt/lualine.nvim'
 Plug 'airblade/vim-gitgutter'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'onsails/lspkind-nvim'
-Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'nvim-treesitter/nvim-treesitter', {'branch' : '0.5-compat'}
 Plug 'nvim-treesitter/nvim-treesitter-textobjects', {'branch' : '0.5-compat'}
 Plug 'folke/which-key.nvim'
 Plug 'SmiteshP/nvim-gps'
 
+Plug 'L3MON4D3/LuaSnip'
 Plug 'b3nj5m1n/kommentary'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
@@ -362,25 +361,6 @@ require'lualine'.setup {
   extensions = {'fzf', 'nvim-tree', 'quickfix'}
 }
 EOF
-
-" wilder.nvim
-"""""""""""""""""""""""""""""""""""""""""
-call wilder#setup({'modes': [':', '/', '?']})
-call wilder#set_option('pipeline', [
-      \   wilder#branch(
-      \     [
-      \       wilder#check({_, x -> empty(x)}),
-      \       wilder#history(),
-      \     ],
-      \     wilder#cmdline_pipeline(),
-      \     wilder#search_pipeline(),
-      \   ),
-      \ ])
-
-call wilder#set_option('renderer', wilder#wildmenu_renderer({
-      \ 'highlighter': wilder#basic_highlighter(),
-      \ 'separator': ' · ',
-      \ }))
 
 " vim-markdown
 """""""""""""""""""""""""""""""""""""""""
