@@ -246,20 +246,20 @@ require'nvim-treesitter.configs'.setup {
       enable = true,
       set_jumps = true, -- whether to set jumps in the jumplist
       goto_next_start = {
-        [']m'] = '@function.outer',
-        [']]'] = '@class.outer',
+        [']]'] = '@function.outer',
+        [']m'] = '@class.outer',
       },
       goto_next_end = {
-        [']M'] = '@function.outer',
-        [']['] = '@class.outer',
+        [']['] = '@function.outer',
+        [']M'] = '@class.outer',
       },
       goto_previous_start = {
-        ['[m'] = '@function.outer',
-        ['[['] = '@class.outer',
+        ['[['] = '@function.outer',
+        ['[m'] = '@class.outer',
       },
       goto_previous_end = {
-        ['[M'] = '@function.outer',
-        ['[]'] = '@class.outer',
+        ['[]'] = '@function.outer',
+        ['[M'] = '@class.outer',
       },
     },
   },
@@ -329,6 +329,14 @@ let g:nvim_tree_icons = {
     \ }
 nnoremap <leader>n :NvimTreeRefresh<CR>:NvimTreeToggle<CR>
 nnoremap <leader>N :NvimTreeToggle<CR>
+
+" nvim-gps
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("nvim-gps").setup{
+
+}
+EOF
 
 " lualine
 """""""""""""""""""""""""""""""""""""""""
