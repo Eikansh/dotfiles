@@ -27,12 +27,13 @@ Plug 'folke/which-key.nvim'
 Plug 'SmiteshP/nvim-gps'
 
 Plug 'L3MON4D3/LuaSnip'
-Plug 'b3nj5m1n/kommentary'
+Plug 'tpope/vim-commentary'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
+Plug 'ahmedkhalf/project.nvim'
 
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
@@ -77,10 +78,7 @@ set ignorecase
 set smartcase
 set wrapscan          " wrap around
 set completeopt=menuone,noselect
-set inccommand=split
-
-" Unbind some useless/annoying default key bindings.
-nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
+set lazyredraw
 
 " Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
@@ -144,6 +142,15 @@ inoremap <Right> <ESC>:echoe "Use l"<CR>
 inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
 
+" Unbind some useless/annoying default key bindings.
+" nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
+nnoremap Q @@
+" Quickly switch between two recent buffer
+nnoremap ,, <C-^>
+nnoremap Y y$
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 
@@ -168,7 +175,6 @@ function! RipgrepFzf(query, fullscreen)
 endfunction
 
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-
 
 nnoremap <silent> <c-p> :Files<CR>
 nnoremap ; :Buffers<CR>
@@ -273,6 +279,15 @@ require("onedark").setup({
   functionStyle = "italic"
 })
 EOF
+
+" project.nvim
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+  require("project_nvim").setup {
+  }
+EOF
+let g:nvim_tree_update_cwd = 1
+let g:nvim_tree_respect_buf_cwd = 1
 
 " lightspeed
 """""""""""""""""""""""""""""""""""""""""
@@ -405,6 +420,7 @@ nmap [s <Plug>VimyouautocorrectPrevious
 " LSP
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
+  require'lspinstall'.setup()
   local nvim_lsp = require 'lspconfig'
   local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -436,7 +452,8 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright'}
+-- local servers = { 'clangd', 'pyright'}
+local servers = require'lspinstall'.installed_servers()
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
