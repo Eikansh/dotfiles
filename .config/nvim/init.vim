@@ -77,6 +77,7 @@ set ignorecase
 set smartcase
 set wrapscan          " wrap around
 set completeopt=menuone,noselect
+set inccommand=split
 
 " Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -434,7 +435,7 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
--- vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
+ vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
 EOF
 
 " nvim-comp
