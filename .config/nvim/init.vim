@@ -7,9 +7,12 @@ call plug#begin()
 Plug 'kevinhwang91/nvim-bqf'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
-
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -17,7 +20,8 @@ Plug 'hrsh7th/cmp-path'
 Plug 'saadparwaiz1/cmp_luasnip'
 
 Plug 'hoob3rt/lualine.nvim'
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
+Plug 'lewis6991/gitsigns.nvim'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'onsails/lspkind-nvim'
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -27,13 +31,14 @@ Plug 'folke/which-key.nvim'
 Plug 'SmiteshP/nvim-gps'
 
 Plug 'L3MON4D3/LuaSnip'
-Plug 'tpope/vim-commentary'
+Plug 'b3nj5m1n/kommentary'
 Plug 'ggandor/lightspeed.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'ahmedkhalf/project.nvim'
+Plug 'karb94/neoscroll.nvim'
 
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
@@ -272,6 +277,26 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
+" telescope
+"""""""""""""""""""""""""""""""""""""""""
+lua <<EOF
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = {
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
+      },
+    },
+  },
+}
+EOF
+
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
 " onedark
 """""""""""""""""""""""""""""""""""""""""
 lua << EOF
@@ -286,6 +311,7 @@ lua << EOF
   require("project_nvim").setup {
   }
 EOF
+
 let g:nvim_tree_update_cwd = 1
 let g:nvim_tree_respect_buf_cwd = 1
 
@@ -305,7 +331,25 @@ EOF
 """""""""""""""""""""""""""""""""""""""""
 lua << EOF
 require("which-key").setup{
+plugins = {
+  spelling = {
+    enabled = true
+    }
+  }
+}
+EOF
 
+" gitsigns
+"""""""""""""""""""""""""""""""""""""""""
+lua <<EOF
+require('gitsigns').setup {
+  signs = {
+    add = { hl = 'GitGutterAdd', text = '+' },
+    change = { hl = 'GitGutterChange', text = '~' },
+    delete = { hl = 'GitGutterDelete', text = '_' },
+    topdelete = { hl = 'GitGutterDelete', text = '‾' },
+    changedelete = { hl = 'GitGutterChange', text = '~' },
+  },
 }
 EOF
 
@@ -352,6 +396,10 @@ require("nvim-gps").setup{
 
 }
 EOF
+
+" neoscroll
+"""""""""""""""""""""""""""""""""""""""""
+lua require('neoscroll').setup()
 
 " lualine
 """""""""""""""""""""""""""""""""""""""""
