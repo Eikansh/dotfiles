@@ -18,6 +18,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
 Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'f3fora/cmp-spell'
 
 Plug 'hoob3rt/lualine.nvim'
 " Plug 'airblade/vim-gitgutter'
@@ -573,6 +574,7 @@ lua <<EOF
     { name = 'luasnip' },
     { name = 'buffer' },
     { name = 'path' },
+    { name = 'spell' },
     },
   }
 
