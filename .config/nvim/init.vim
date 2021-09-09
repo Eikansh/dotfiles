@@ -21,7 +21,6 @@ Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'f3fora/cmp-spell'
 
 Plug 'hoob3rt/lualine.nvim'
-" Plug 'airblade/vim-gitgutter'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'romainl/vim-cool'               " Disables highlight when search is done
 Plug 'onsails/lspkind-nvim'
@@ -39,7 +38,6 @@ Plug 'rafamadriz/friendly-snippets'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'ahmedkhalf/project.nvim'
-Plug 'karb94/neoscroll.nvim'
 
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
@@ -100,9 +98,6 @@ set splitright
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
 "set tabstop=4 shiftwidth=4 expandtab softtabstop=4 
 
-"exuberant-tags support
-set tags=./tags;/
-
 " =======================================
 " # Custom Key Mapping
 " =======================================
@@ -153,9 +148,26 @@ inoremap <Down>  <ESC>:echoe "Use j"<CR>
 nnoremap Q @@
 " Quickly switch between two recent buffer
 nnoremap ,, <C-^>
+" Make Y behave like other capitals
 nnoremap Y y$
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+
+" Saner behavior for n and N
+nnoremap <expr> n  'Nn'[v:searchforward]
+xnoremap <expr> n  'Nn'[v:searchforward]
+onoremap <expr> n  'Nn'[v:searchforward]
+
+nnoremap <expr> N  'nN'[v:searchforward]
+xnoremap <expr> N  'nN'[v:searchforward]
+onoremap <expr> N  'nN'[v:searchforward]
+
+" Don't lose selection when shifting sidewards
+xnoremap <  <gv
+xnoremap >  >gv
+" Move lines in visual mode
+xnoremap J :move '>+1<CR>gv-gv
+xnoremap K :move '<-2<CR>gv-gv
 
 command! -nargs=* Note call zettel#edit(<f-args>)
 imap <c-x><c-f> <plug>(fzf-complete-path)
@@ -313,9 +325,6 @@ lua << EOF
   }
 EOF
 
-let g:nvim_tree_update_cwd = 1
-let g:nvim_tree_respect_buf_cwd = 1
-
 " lightspeed
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
@@ -397,10 +406,6 @@ require("nvim-gps").setup{
 
 }
 EOF
-
-" neoscroll
-"""""""""""""""""""""""""""""""""""""""""
-lua require('neoscroll').setup()
 
 " lualine
 """""""""""""""""""""""""""""""""""""""""
@@ -515,15 +520,18 @@ EOF
 " nvim-comp
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
-  local cmp = require 'cmp'
-  local t = function(str)
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
+  require("luasnip/loaders/from_vscode").lazy_load()
+  local has_words_before = function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    return not vim.api.nvim_get_current_line():sub(1, cursor[2]):match('^%s$')
   end
+
+  local luasnip = require('luasnip')
+  local cmp = require ('cmp')
   local check_back_space = function()
     local col = vim.fn.col '.' - 1
     return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
   end
-  local luasnip = require("luasnip")
   cmp.setup {
     snippet = {
       expand = function(args)
@@ -541,40 +549,31 @@ lua <<EOF
         behavior = cmp.ConfirmBehavior.Replace,
         select = true,
       },
-      ["<tab>"] = cmp.mapping(function(fallback)
+      ['<Tab>'] = cmp.mapping(function(fallback)
         if vim.fn.pumvisible() == 1 then
-          vim.fn.feedkeys(t("<C-n>"), "n")
-        elseif luasnip.expand_or_jumpable() then
-          vim.fn.feedkeys(t("<Plug>luasnip-expand-or-jump"), "")
-        elseif check_back_space() then
-          vim.fn.feedkeys(t("<tab>"), "n")
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n', true)
+        elseif has_words_before() and luasnip.expand_or_jumpable() then
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '', true)
         else
-          fallback()
+          fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
         end
-      end, {
-        "i",
-        "s",
-      }),
-      ["<S-tab>"] = cmp.mapping(function(fallback)
+      end, { 'i', 's' }),
+
+      ['<S-Tab>'] = cmp.mapping(function()
         if vim.fn.pumvisible() == 1 then
-          vim.fn.feedkeys(t("<C-p>"), "n")
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n', true)
         elseif luasnip.jumpable(-1) then
-          vim.fn.feedkeys(t("<Plug>luasnip-jump-prev"), "")
-        else
-          fallback()
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '', true)
         end
-      end, {
-        "i",
-        "s",
-      }),
-    },
+      end, { 'i', 's' }),
+      },
     -- You should specify your *installed* sources.
     sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-    { name = 'buffer' },
-    { name = 'path' },
-    { name = 'spell' },
+      { name = 'nvim_lsp' },
+      { name = 'luasnip' },
+      { name = 'buffer' },
+      { name = 'path' },
+      { name = 'spell' },
     },
   }
 
@@ -585,6 +584,14 @@ lua <<EOF
         vim_item.kind = lspkind.presets.default[vim_item.kind]
         .. " "
         .. vim_item.kind
+        -- set a name for each source
+        vim_item.menu = ({
+          buffer = "[Buffer]",
+          nvim_lsp = "[LSP]",
+          luasnip = "[Snippet]",
+          path = "[Path]",
+          spell = "[Spell]",
+        })[entry.source.name]
         return vim_item
       end
     }
