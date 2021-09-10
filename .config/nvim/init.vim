@@ -147,7 +147,7 @@ inoremap <Down>  <ESC>:echoe "Use j"<CR>
 " nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 nnoremap Q @@
 " Quickly switch between two recent buffer
-nnoremap ,, <C-^>
+nnoremap <Backspace> <C-^>
 " Make Y behave like other capitals
 nnoremap Y y$
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
