@@ -37,7 +37,6 @@ Plug 'kyazdani42/nvim-tree.lua'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'tpope/vim-repeat'
 Plug 'jiangmiao/auto-pairs'
-Plug 'ahmedkhalf/project.nvim'
 
 Plug 'godlygeek/tabular', { 'for': ['text', 'markdown'] }
 Plug 'plasticboy/vim-markdown', { 'for': ['text', 'markdown'] }
@@ -83,6 +82,7 @@ set smartcase
 set wrapscan          " wrap around
 set completeopt=menuone,noselect
 set lazyredraw
+set undofile
 
 " Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
@@ -91,8 +91,8 @@ set noerrorbells visualbell t_vb=
 set splitbelow
 set splitright
 
-"expandtab- show existing tab with 4 spaces width
 "shiftwidth- when indenting with >,use 4 spaces width
+"expandtab- show existing tab with 4 spaces width
 "tabstop-on pressing tab insert 4 spaces
 "softtabstop- makes the spaces feel like real tabs
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
@@ -316,13 +316,6 @@ lua << EOF
 require("onedark").setup({
   functionStyle = "italic"
 })
-EOF
-
-" project.nvim
-"""""""""""""""""""""""""""""""""""""""""
-lua << EOF
-  require("project_nvim").setup {
-  }
 EOF
 
 " lightspeed
