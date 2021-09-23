@@ -19,6 +19,7 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'f3fora/cmp-spell'
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 
 Plug 'hoob3rt/lualine.nvim'
 Plug 'lewis6991/gitsigns.nvim'
@@ -464,6 +465,17 @@ imap <F3> <C-O><Plug>VimyouautocorrectUndo
 nmap [s <Plug>VimyouautocorrectJump
 nmap [s <Plug>VimyouautocorrectPrevious
 
+" cmp-tabnine
+lua<<EOF
+local tabnine = require('cmp_tabnine.config')
+tabnine:setup({
+        max_lines = 1000;
+        max_num_results = 20;
+        sort = true;
+	run_on_every_keystroke = true;
+})
+EOF
+
 " LSP
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
@@ -567,26 +579,33 @@ lua <<EOF
       { name = 'buffer' },
       { name = 'path' },
       { name = 'spell' },
+      { name = 'cmp_tabnine' },
     },
   }
 
   local lspkind = require('lspkind')
+  local source_mapping = {
+    buffer = "[Buffer]",
+    nvim_lsp = "[LSP]",
+    luasnip = "[Snippet]",
+    path = "[Path]",
+    spell = "[Spell]",
+    cmp_tabnine = "[TN]",
+    }
   cmp.setup {
     formatting = {
       format = function(entry, vim_item)
-        vim_item.kind = lspkind.presets.default[vim_item.kind]
-        .. " "
-        .. vim_item.kind
-        -- set a name for each source
-        vim_item.menu = ({
-          buffer = "[Buffer]",
-          nvim_lsp = "[LSP]",
-          luasnip = "[Snippet]",
-          path = "[Path]",
-          spell = "[Spell]",
-        })[entry.source.name]
-        return vim_item
-      end
+            vim_item.kind = lspkind.presets.default[vim_item.kind]
+            local menu = source_mapping[entry.source.name]
+            if entry.source.name == 'cmp_tabnine' then
+              if entry.completion_item.data ~= nil and entry.completion_item.data.detail ~= nil then
+                menu = entry.completion_item.data.detail .. ' ' .. menu
+              end
+              vim_item.kind = ''
+            end
+            vim_item.menu = menu
+            return vim_item
+          end
     }
   }
 EOF
