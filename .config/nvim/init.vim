@@ -574,12 +574,12 @@ lua <<EOF
       },
     -- You should specify your *installed* sources.
     sources = {
+      { name = 'cmp_tabnine' },
       { name = 'nvim_lsp' },
       { name = 'luasnip' },
       { name = 'buffer' },
       { name = 'path' },
       { name = 'spell' },
-      { name = 'cmp_tabnine' },
     },
   }
 
