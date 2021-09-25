@@ -18,7 +18,6 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
 Plug 'saadparwaiz1/cmp_luasnip'
-Plug 'f3fora/cmp-spell'
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 
 Plug 'hoob3rt/lualine.nvim'
@@ -579,7 +578,6 @@ lua <<EOF
       { name = 'luasnip' },
       { name = 'buffer' },
       { name = 'path' },
-      { name = 'spell' },
     },
   }
 
@@ -589,7 +587,6 @@ lua <<EOF
     nvim_lsp = "[LSP]",
     luasnip = "[Snippet]",
     path = "[Path]",
-    spell = "[Spell]",
     cmp_tabnine = "[TN]",
     }
   cmp.setup {
