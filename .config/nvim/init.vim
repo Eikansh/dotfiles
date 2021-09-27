@@ -389,6 +389,11 @@ let g:nvim_tree_icons = {
     \   'symlink_open': "",
     \   }
     \ }
+lua <<EOF
+require'nvim-tree'.setup {
+
+  }
+EOF
 nnoremap <leader>n :NvimTreeRefresh<CR>:NvimTreeToggle<CR>
 nnoremap <leader>N :NvimTreeToggle<CR>
 
