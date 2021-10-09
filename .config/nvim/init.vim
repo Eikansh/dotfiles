@@ -420,7 +420,8 @@ require'lualine'.setup {
   sections = {
     lualine_a = {'mode'},
     lualine_b = {'branch'},
-    lualine_c = {'filename', gps.get_location, condition = gps.is_available},
+    -- lualine_c = {'filename', gps.get_location, condition = gps.is_available},
+    lualine_c = {'filename'},
     lualine_x = {'encoding', 'fileformat', 'filetype'},
     lualine_y = {'progress'},
     lualine_z = {'location'}
@@ -531,8 +532,8 @@ EOF
 lua <<EOF
   require("luasnip/loaders/from_vscode").lazy_load()
   local has_words_before = function()
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    return not vim.api.nvim_get_current_line():sub(1, cursor[2]):match('^%s$')
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
   end
 
   local luasnip = require('luasnip')
@@ -558,56 +559,45 @@ lua <<EOF
         behavior = cmp.ConfirmBehavior.Replace,
         select = true,
       },
-      ['<Tab>'] = cmp.mapping(function(fallback)
-        if vim.fn.pumvisible() == 1 then
-          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n', true)
-        elseif has_words_before() and luasnip.expand_or_jumpable() then
-          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '', true)
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        elseif has_words_before() then
+          cmp.complete()
         else
-          fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+          fallback()
         end
-      end, { 'i', 's' }),
+      end, { "i", "s" }),
 
-      ['<S-Tab>'] = cmp.mapping(function()
-        if vim.fn.pumvisible() == 1 then
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n', true)
+      ["<S-Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
         elseif luasnip.jumpable(-1) then
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '', true)
+          luasnip.jump(-1)
+        else
+          fallback()
         end
-      end, { 'i', 's' }),
+      end, { "i", "s" }),
       },
     -- You should specify your *installed* sources.
     sources = {
       { name = 'cmp_tabnine' },
-      { name = 'nvim_lsp' },
       { name = 'luasnip' },
+      { name = 'nvim_lsp' },
       { name = 'buffer' },
       { name = 'path' },
+    },
+  experimental = {
+    ghost_text = true,
     },
   }
 
   local lspkind = require('lspkind')
-  local source_mapping = {
-    buffer = "[Buffer]",
-    nvim_lsp = "[LSP]",
-    luasnip = "[Snippet]",
-    path = "[Path]",
-    cmp_tabnine = "[TN]",
-    }
   cmp.setup {
     formatting = {
-      format = function(entry, vim_item)
-            vim_item.kind = lspkind.presets.default[vim_item.kind]
-            local menu = source_mapping[entry.source.name]
-            if entry.source.name == 'cmp_tabnine' then
-              if entry.completion_item.data ~= nil and entry.completion_item.data.detail ~= nil then
-                menu = entry.completion_item.data.detail .. ' ' .. menu
-              end
-              vim_item.kind = ''
-            end
-            vim_item.menu = menu
-            return vim_item
-          end
+      format = lspkind.cmp_format(),
     }
   }
 EOF
