@@ -28,7 +28,6 @@ Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'nvim-treesitter/nvim-treesitter', {'branch' : '0.5-compat'}
 Plug 'nvim-treesitter/nvim-treesitter-textobjects', {'branch' : '0.5-compat'}
 Plug 'folke/which-key.nvim'
-Plug 'SmiteshP/nvim-gps'
 
 Plug 'L3MON4D3/LuaSnip'
 Plug 'b3nj5m1n/kommentary'
@@ -48,7 +47,7 @@ Plug 'tweekmonster/startuptime.vim'
 
 " Themes
 " Plug 'folke/tokyonight.nvim'
-Plug 'monsonjeremy/onedark.nvim'
+Plug 'ful1e5/onedark.nvim'
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -310,14 +309,6 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-" onedark
-"""""""""""""""""""""""""""""""""""""""""
-lua << EOF
-require("onedark").setup({
-  functionStyle = "italic"
-})
-EOF
-
 " lightspeed
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
@@ -325,10 +316,6 @@ require'lightspeed'.setup {
    jump_to_first_match = false,
  }
 EOF
-
-:highlight LightspeedShortcut guibg=#282c34 guifg=#ff00ff gui=bold,underline
-:highlight LightspeedLabel guibg=#282c34 guifg=#ff00ff gui=bold,underline
-:highlight LightspeedOneCharMatch guibg=#282c34 guifg=#ff00ff gui=bold,underline
 
 " which-key
 """""""""""""""""""""""""""""""""""""""""
@@ -360,10 +347,8 @@ EOF
 """""""""""""""""""""""""""""""""""""""""
 let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache' ] "empty by default
 let g:nvim_tree_gitignore = 1 "0 by default
-let g:nvim_tree_auto_close = 1 "0 by default, closes the tree when it's the last window
 let g:nvim_tree_quit_on_open = 1 "0 by default, closes the tree when you open a file
 let g:nvim_tree_indent_markers = 1 
-let g:nvim_tree_follow = 1 "0 by default, this option allows the cursor to be updated when entering a buffer
 let g:nvim_tree_hide_dotfiles = 1 "0 by default, this option hides files and folders starting with a dot `.`
 let g:nvim_tree_git_hl = 1 "0 by default, will enable file highlight for git attributes (can be used without the icons).
 let g:nvim_tree_width_allow_resize  = 1 "0 by default, will not resize the tree when opening a file
@@ -391,24 +376,16 @@ let g:nvim_tree_icons = {
     \ }
 lua <<EOF
 require'nvim-tree'.setup {
-
+  auto_close = true,
+  update_cwd = true,
   }
 EOF
 nnoremap <leader>n :NvimTreeRefresh<CR>:NvimTreeToggle<CR>
 nnoremap <leader>N :NvimTreeToggle<CR>
 
-" nvim-gps
-"""""""""""""""""""""""""""""""""""""""""
-lua << EOF
-require("nvim-gps").setup{
-
-}
-EOF
-
 " lualine
 """""""""""""""""""""""""""""""""""""""""
 lua <<EOF
-local gps = require("nvim-gps")
 require'lualine'.setup {
   options = {
     icons_enabled = true,
@@ -420,7 +397,6 @@ require'lualine'.setup {
   sections = {
     lualine_a = {'mode'},
     lualine_b = {'branch'},
-    -- lualine_c = {'filename', gps.get_location, condition = gps.is_available},
     lualine_c = {'filename'},
     lualine_x = {'encoding', 'fileformat', 'filetype'},
     lualine_y = {'progress'},
@@ -437,6 +413,14 @@ require'lualine'.setup {
   tabline = {},
   extensions = {'fzf', 'nvim-tree', 'quickfix'}
 }
+EOF
+
+" onedark
+"""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("onedark").setup({
+  function_style = "italic", 
+})
 EOF
 
 " vim-markdown
@@ -597,7 +581,13 @@ lua <<EOF
   local lspkind = require('lspkind')
   cmp.setup {
     formatting = {
-      format = lspkind.cmp_format(),
+      format = require("lspkind").cmp_format({with_text = true, menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        cmp_tabnine = "[TabNine]",
+        path = "[Path]",
+      })}),
     }
   }
 EOF
